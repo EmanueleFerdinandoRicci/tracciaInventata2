@@ -1,4 +1,5 @@
 from database.DB_connect import DBConnect
+from model.customer import Customer
 from model.edge import Edge
 from model.genre import Genre
 from model.track import Track
@@ -31,69 +32,115 @@ class DAO():
         return first, last
 
     @staticmethod
-    def getAllGenres():
+    def getAllCountries():
         conn = DBConnect.get_connection()
 
         result = []
 
         cursor = conn.cursor(dictionary=True)
-        query = """select g.*
-                    from genre g"""
+        query = """select distinct(c.Country) as country
+                    from customer c 
+                    order by c.Country"""
 
         cursor.execute(query)
 
         for row in cursor:
-            result.append(Genre(**row))
+            result.append(row["country"])
 
         cursor.close()
         conn.close()
         return result
 
     @staticmethod
-    def getAllNodes(genreId):
+    def getNodes(date1, date2, country):
+
         conn = DBConnect.get_connection()
 
-        result = []
+        results = []
 
         cursor = conn.cursor(dictionary=True)
-        query = """select t.*
-                    from track t 
-                    where t.GenreId = %s"""
+        query = """select c.*
+                   from customer c, \
+                        invoice i
+                   where c.CustomerId = i.CustomerId \
+                     and i.InvoiceDate between %s and %s
+                     and c.Country = %s
+                   group by c.CustomerId
+                   order by c.CustomerId  """
 
-        cursor.execute(query,(genreId,))
+        cursor.execute(query, (date1, date2, country,))
 
         for row in cursor:
-            result.append(Track(**row))
+            results.append(Customer(**row))
+
+        cursor.close()
+        conn.close()
+        return results
+
+    @staticmethod
+    def getAllEdgesUguali(date1, date2, country,idMap):
+        conn = DBConnect.get_connection()
+        result = []
+        cursor = conn.cursor(dictionary=True)
+
+        query = """select c1.idC as id1, c2.idC as id2, sum(c1.tot) as p1, sum(c2.tot) as p2
+                    from (select c.CustomerId  as idC, a.ArtistId as idA, sum(i.Total) as tot
+                    from artist a, album al, track t, invoiceline il, invoice i, customer c 
+                    where a.ArtistId = al.ArtistId and al.AlbumId = t.AlbumId and t.TrackId = il.TrackId 
+                    and il.InvoiceId = i.InvoiceId and i.CustomerId = c.CustomerId 
+                    and i.InvoiceDate between %s and %s
+                    and c.Country = %s
+                    group by c.CustomerId, a.ArtistId) c1, 
+                    (select c.CustomerId  as idC, a.ArtistId as idA, sum(i.Total) as tot
+                    from artist a, album al, track t, invoiceline il, invoice i, customer c 
+                    where a.ArtistId = al.ArtistId and al.AlbumId = t.AlbumId and t.TrackId = il.TrackId 
+                    and il.InvoiceId = i.InvoiceId and i.CustomerId = c.CustomerId 
+                    and i.InvoiceDate between %s and %s
+                    and c.Country = %s
+                    group by c.CustomerId, a.ArtistId) c2
+                    where c1.idC != c2.idC and c1.idA = c2.idA 
+                    group by c1.idC, c2.idC
+                    having sum(c1.tot) = sum(c2.tot)"""
+
+        cursor.execute(query, (date1, date2, country, date1, date2, country,))
+
+        for row in cursor:
+            result.append(Edge(idMap[row["id1"]],idMap[row["id2"]],row["p1"],row["p2"]))
 
         cursor.close()
         conn.close()
         return result
 
     @staticmethod
-    def getAllEdges(genreId, idMap):
+    def getAllEdgesDiversi(date1, date2, country,idMap):
         conn = DBConnect.get_connection()
-
         result = []
-
         cursor = conn.cursor(dictionary=True)
-        query = """select t1.id as id1, t2.id as id2, count(*) as peso 
-                    from (select t.TrackId as id, p.PlaylistId as p 
-                    from track t, playlisttrack p 
-                    where t.GenreId = %s and t.TrackId = p.TrackId) t1,
-                    (select t.TrackId as id, p.PlaylistId as p
-                    from track t, playlisttrack p 
-                    where t.GenreId = %s and t.TrackId = p.TrackId) t2
-                    where t1.id > t2.id and t1.p = t2.p
-                    group by t1.id, t2.id"""
 
-        cursor.execute(query, (genreId,genreId,))
+        query = """select c1.idC as id1, c2.idC as id2, sum(c1.tot) as p1, sum(c2.tot) as p2
+                    from (select c.CustomerId  as idC, a.ArtistId as idA, sum(i.Total) as tot
+                    from artist a, album al, track t, invoiceline il, invoice i, customer c 
+                    where a.ArtistId = al.ArtistId and al.AlbumId = t.AlbumId and t.TrackId = il.TrackId 
+                    and il.InvoiceId = i.InvoiceId and i.CustomerId = c.CustomerId 
+                    and i.InvoiceDate between %s and %s
+                    and c.Country = %s
+                    group by c.CustomerId, a.ArtistId) c1, 
+                    (select c.CustomerId  as idC, a.ArtistId as idA, sum(i.Total) as tot
+                    from artist a, album al, track t, invoiceline il, invoice i, customer c 
+                    where a.ArtistId = al.ArtistId and al.AlbumId = t.AlbumId and t.TrackId = il.TrackId 
+                    and il.InvoiceId = i.InvoiceId and i.CustomerId = c.CustomerId 
+                    and i.InvoiceDate between %s and %s
+                    and c.Country = %s
+                    group by c.CustomerId, a.ArtistId) c2
+                    where c1.idC != c2.idC and c1.idA = c2.idA
+                    group by c1.idC, c2.idC
+                    having sum(c1.tot) < sum(c2.tot)"""
+
+        cursor.execute(query, (date1, date2, country, date1, date2, country,))
 
         for row in cursor:
-            result.append(Edge(idMap[row["id1"]],idMap[row["id2"]],row["peso"]))
+            result.append(Edge(idMap[row["id1"]],idMap[row["id2"]],row["p1"],row["p2"]))
 
         cursor.close()
         conn.close()
         return result
-
-
-

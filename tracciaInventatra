@@ -4,7 +4,7 @@ Input GUI: Dropdown Country (Nazione), DatePicker Start/End (Date ordini).
 PUNTO 1 (Grafo):
 Nodi: Clienti (Customer) residenti nella nazione selezionata che hanno fatto almeno un ordine nel range.
 Archi: Collegamento tra due clienti se hanno acquistato almeno un brano dello stesso Artist.
-Peso: Somma della spesa totale (Total fattura) dei due clienti per gli artisti condivisi.
+Peso: Somma della spesa totale (Total fattura) dei due clienti per gli artisti condivisi. (entra in quello ricco)
 Ranking: Stampa i 5 clienti con la somma dei pesi degli archi uscenti più alta.
 
 PUNTO 2 (Ricorsione):

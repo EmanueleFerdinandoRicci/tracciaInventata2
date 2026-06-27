@@ -53,14 +53,14 @@ class View(ft.UserControl):
                       alignment=ft.MainAxisAlignment.CENTER)
         self._page.controls.append(row1)
 
-        self._txtMin = ft.TextField(label="Min Peso", width=120)
-        self._ddTrackStart = ft.Dropdown(label="Start track", width=350)
-        self._ddTrackEnd = ft.Dropdown(label="End track", width=350)
+        self._txtLun = ft.TextField(label="Lun", width=120)
+        self._ddCustomerStart = ft.Dropdown(label="Start customer", width=350)
+        self._ddCustomerEnd = ft.Dropdown(label="End customer", width=350)
 
         self._btnCercaCammino = ft.ElevatedButton(text="Cerca ",
                                                   on_click=self._controller.handleCercaCammino, width=120)
 
-        row2 = ft.Row([self._txtMin, self._ddTrackStart, self._ddTrackEnd, self._btnCercaCammino],
+        row2 = ft.Row([self._txtLun, self._ddCustomerStart, self._ddCustomerEnd, self._btnCercaCammino],
                       alignment=ft.MainAxisAlignment.CENTER)
         self._page.controls.append(row2)
 

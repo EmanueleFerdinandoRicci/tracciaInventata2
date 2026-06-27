@@ -11,28 +11,36 @@ class Controller:
         self._model = model
 
     def fillDDNazione(self):
-        genres = self._model.getAllGenres()
-        for g in genres:
+        nazioni = self._model.getAllCountries()
+        for n in nazioni:
             self._view._ddNazione.options.append(
-                ft.dropdown.Option(key=str(g.GenreId), text=g.Name)
+                ft.dropdown.Option(n)
             )
         self._view.update_page()
 
     def handleCreaGrafo(self, e):
-        genre_id = self._view._ddGenre.value
-
-        if genre_id is None:
-            self._view.create_alert("Seleziona un genere!")
-            return
-        self._model.buildGraph(genre_id)
-
-        n_nodi, n_archi = self._model.getGraphDetails()
+        country = self._view._ddNazione.value
+        date1 = self._view._dp1.value
+        date2 = self._view._dp2.value
+        self._model.buildGraph(date1, date2, country)
+        n, a = self._model.getGraphDetails()
 
         self._view.txt_result.controls.clear()
-        self._view.txt_result.controls.append(ft.Text(f"Grafo correttamente creato:"))
-        self._view.txt_result.controls.append(ft.Text(f"Numero di nodi: {n_nodi}"))
-        self._view.txt_result.controls.append(ft.Text(f"Numero di archi: {n_archi}"))
-
+        self._view.txt_result.controls.append(
+            ft.Text("Date selezionate:")
+        )
+        self._view.txt_result.controls.append(
+            ft.Text(f"Start date:{self._view._dp1.value.date()}")
+        )
+        self._view.txt_result.controls.append(
+            ft.Text(f"End date:{self._view._dp2.value.date()}")
+        )
+        self._view.txt_result.controls.append(
+            ft.Text("Grafo creato:")
+        )
+        self._view.txt_result.controls.append(
+            ft.Text(f"Numero di nodi:{n}, numero di archi:{a}")
+        )
         nodiArchi = self._model.getNodiConMaggiorNumArchiUscenti()
         self._view.txt_result.controls.append(
             ft.Text("Nodi con più archi:")
@@ -41,11 +49,11 @@ class Controller:
             self._view.txt_result.controls.append(
                 ft.Text(f"{p[0]} - score: {p[1]}")
             )
-        self.fillDDTrack()
+        self.fillDDCustomer()
         self._view.update_page()
 
     def handleCercaCammino(self,e):
-        if self._view._txtMin == "":
+        if self._view._txtLun == "":
             self._view.txt_result.controls.clear()
             self._view.txt_result.controls.append(
                 ft.Text("Inserire un valore numerico in lun", color="red")
@@ -54,29 +62,29 @@ class Controller:
             return
 
         try:
-            min = int(self._view._txtMin.value)
+            lun = int(self._view._txtLun.value)
         except ValueError:
             self._view.txt_result.controls.clear()
             self._view.txt_result.controls.append(
-                ft.Text("Inserire un valore numerico in max", color="red")
+                ft.Text("Inserire un valore numerico in lun", color="red")
             )
             self._view.update_page()
             return
 
-        path, score = self._model.getBestPath(min, self._view._ddTrackStart.value, self._view._ddTrackEnd.value)
+        path, score = self._model.getBestPath(lun, self._view._ddCustomerStart.value, self._view._ddCustomerEnd.value)
 
         if len(path) == 0:
             self._view.txt_result.controls.clear()
             self._view.txt_result.controls.append(
                 ft.Text(
-                    f"Non ho trovato un cammino tra {self._view._ddTrackStart.value} e {self._view._ddTrackEnd.value}")
+                    f"Non ho trovato un cammino tra {self._view._ddCustomerStart.value} e {self._view._ddCustomerEnd.value}")
             )
             self._view.update_page()
             return
 
         self._view.txt_result.controls.clear()
         self._view.txt_result.controls.append(
-            ft.Text(f"Ecco il cammino migliore tra {self._view._ddTrackStart.value} e {self._view._ddTrackEnd.value}")
+            ft.Text(f"Ecco il cammino migliore tra {self._view._ddCustomerStart.value} e {self._view._ddCustomerEnd.value}")
         )
         self._view.txt_result.controls.clear()
         self._view.txt_result.controls.append(
@@ -91,14 +99,14 @@ class Controller:
         )
         self._view.update_page()
 
-    def fillDDTrack(self):
+    def fillDDCustomer(self):
         nodes = self._model.getNodes()
         for n in nodes:
-            self._view._ddTrackStart.options.append(
-                ft.dropdown.Option(key=str(n.TrackId), text=n.Name)
+            self._view._ddCustomerStart.options.append(
+                ft.dropdown.Option(key=str(n.CustomerId))
             )
-            self._view._ddTrackEnd.options.append(
-                ft.dropdown.Option(key=str(n.TrackId), text=n.Name)
+            self._view._ddCustomerEnd.options.append(
+                ft.dropdown.Option(key=str(n.CustomerId))
             )
         self._view.update_page()
 
