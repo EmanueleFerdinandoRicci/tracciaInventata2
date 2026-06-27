@@ -1,3 +1,5 @@
+import datetime
+
 import flet as ft
 
 
@@ -8,10 +10,10 @@ class Controller:
         # the model, which implements the logic of the program and holds the data
         self._model = model
 
-    def fillDDGenre(self):
+    def fillDDNazione(self):
         genres = self._model.getAllGenres()
         for g in genres:
-            self._view._ddGenre.options.append(
+            self._view._ddNazione.options.append(
                 ft.dropdown.Option(key=str(g.GenreId), text=g.Name)
             )
         self._view.update_page()
@@ -99,3 +101,14 @@ class Controller:
                 ft.dropdown.Option(key=str(n.TrackId), text=n.Name)
             )
         self._view.update_page()
+
+    def setDates(self):
+        first, last = self._model.getDateRange()
+
+        self._view._dp1.first_date = datetime.date(first.year, first.month, first.day)
+        self._view._dp1.last_date = datetime.date(last.year, last.month, last.day)
+        self._view._dp1.current_date = datetime.date(first.year, first.month, first.day)
+
+        self._view._dp2.first_date = datetime.date(first.year, first.month, first.day)
+        self._view._dp2.last_date = datetime.date(last.year, last.month, last.day)
+        self._view._dp2.current_date = datetime.date(last.year, last.month, last.day)

@@ -12,6 +12,9 @@ class Model:
         self._bestPath = []
         self._bestScore = 0
 
+    def getDateRange(self):
+        return DAO.getDateRange()
+
     def getAllGenres(self):
         return DAO.getAllGenres()
 

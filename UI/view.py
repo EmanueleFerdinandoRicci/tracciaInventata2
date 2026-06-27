@@ -24,12 +24,32 @@ class View(ft.UserControl):
         self._page.controls.append(self._title)
 
 
-        self._ddGenre = ft.Dropdown(label="Genere", width=250)
-        self._controller.fillDDGenre()
+        self._ddNazione = ft.Dropdown(label="Nazione", width=250)
+        self._controller.fillDDNazione()
+        self._dp1 = ft.DatePicker(
+            on_change=lambda e: print(f"Giorno selezionato: {self._dp1.value}"),
+            on_dismiss=lambda e: print("Data non selezionata")
+        )
+
+        self._page.overlay.append(self._dp1)
+        self._btnCal1 = ft.ElevatedButton("Start date",
+                                          icon=ft.icons.CALENDAR_MONTH,
+                                          on_click=lambda _: self._dp1.pick_date())
+
+        self._dp2 = ft.DatePicker(
+            on_change=lambda e: print(f"Giorno selezionato: {self._dp2.value}"),
+            on_dismiss=lambda e: print("Data non selezionata")
+        )
+        self._page.overlay.append(self._dp2)
+        self._btnCal2 = ft.ElevatedButton("End date",
+                                          icon=ft.icons.CALENDAR_MONTH,
+                                          on_click=lambda _: self._dp2.pick_date())
+
+        self._controller.setDates()
         self._btnCreaGrafo = ft.ElevatedButton(text="Crea Grafo",
                                                on_click=self._controller.handleCreaGrafo, width=250)
 
-        row1 = ft.Row([self._ddGenre, self._btnCreaGrafo],
+        row1 = ft.Row([self._ddNazione, self._btnCal1, self._btnCal2,self._btnCreaGrafo],
                       alignment=ft.MainAxisAlignment.CENTER)
         self._page.controls.append(row1)
 

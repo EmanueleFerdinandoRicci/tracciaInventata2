@@ -1,9 +1,13 @@
+Simulazione 2: "Customer Community" (Focus: Clienti e Spesa)
+Input GUI: Dropdown Country (Nazione), DatePicker Start/End (Date ordini).
+
 PUNTO 1 (Grafo):
-Nodi: Tutti i brani (Track) appartenenti al Genre selezionato.
-Archi: Due brani A e B sono collegati se compaiono insieme in almeno una Playlist.
-Peso: Numero di playlist distinte che contengono entrambi i brani.
-Ranking: Stampa i 5 brani con il grado pesato più alto (somma dei pesi degli archi incidenti).
+Nodi: Clienti (Customer) residenti nella nazione selezionata che hanno fatto almeno un ordine nel range.
+Archi: Collegamento tra due clienti se hanno acquistato almeno un brano dello stesso Artist.
+Peso: Somma della spesa totale (Total fattura) dei due clienti per gli artisti condivisi.
+Ranking: Stampa i 5 clienti con la somma dei pesi degli archi uscenti più alta.
+
 PUNTO 2 (Ricorsione):
-Input: Start Track, End Track, MaxPeso.
-Obiettivo: Trovare un cammino da Start a End che attraversi solo archi con peso > MaxPeso.
-Il cammino deve minimizzare il numero totale di nodi attraversati.
+Input: Start Customer, End Customer, N_Max (Lunghezza massima).
+Obiettivo: Trovare il cammino
+che massimizza la spesa totale cumulativa (somma dei pesi degli archi), con un numero di nodi totale ≤ N_Max.

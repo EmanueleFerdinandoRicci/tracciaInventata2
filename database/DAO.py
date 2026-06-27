@@ -7,6 +7,30 @@ from model.track import Track
 class DAO():
 
     @staticmethod
+    def getDateRange():
+
+        conn = DBConnect.get_connection()
+
+        results = []
+
+        cursor = conn.cursor(dictionary=True)
+        query = """select distinct(i.InvoiceDate) as date
+                    from invoice i
+                    order by i.InvoiceDate"""
+
+        cursor.execute(query)
+
+        for row in cursor:
+            results.append(row["date"])
+
+        first = results[0]
+        last = results[-1]
+
+        cursor.close()
+        conn.close()
+        return first, last
+
+    @staticmethod
     def getAllGenres():
         conn = DBConnect.get_connection()
 
