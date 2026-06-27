@@ -1,0 +1,9 @@
+PUNTO 1 (Grafo):
+Nodi: Tutti i brani (Track) appartenenti al Genre selezionato.
+Archi: Due brani A e B sono collegati se compaiono insieme in almeno una Playlist.
+Peso: Numero di playlist distinte che contengono entrambi i brani.
+Ranking: Stampa i 5 brani con il grado pesato più alto (somma dei pesi degli archi incidenti).
+PUNTO 2 (Ricorsione):
+Input: Start Track, End Track, MaxPeso.
+Obiettivo: Trovare un cammino da Start a End che attraversi solo archi con peso > MaxPeso.
+Il cammino deve minimizzare il numero totale di nodi attraversati.
