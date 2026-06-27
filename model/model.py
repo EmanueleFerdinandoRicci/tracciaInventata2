@@ -77,5 +77,5 @@ class Model:
     def _getScore(self, parziale):
         score = 0
         for i in range(0, len(parziale) - 1):
-            score += int(self._graph[parziale[i]][parziale[i + 1]]["weight"])
+            score += float(self._graph[parziale[i]][parziale[i + 1]]["weight"])
         return score
