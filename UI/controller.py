@@ -103,10 +103,10 @@ class Controller:
         nodes = self._model.getNodes()
         for n in nodes:
             self._view._ddCustomerStart.options.append(
-                ft.dropdown.Option(key=str(n.CustomerId))
+                ft.dropdown.Option(key=str(n.CustomerId), text= str(n.FirstName) + " " + str(n.LastName))
             )
             self._view._ddCustomerEnd.options.append(
-                ft.dropdown.Option(key=str(n.CustomerId))
+                ft.dropdown.Option(key=str(n.CustomerId), text= str(n.FirstName) + " " + str(n.LastName))
             )
         self._view.update_page()
 
