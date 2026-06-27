@@ -62,10 +62,11 @@ class Model:
         return self._bestPath, self._bestScore
 
     def _ricorsione(self, parziale, lun, end):
-        if len(parziale) <= lun:
-            if parziale[-1] == end and self._getScore(parziale) > self._bestScore:
+        if len(parziale) <= lun and parziale[-1] == end:
+            if self._getScore(parziale) > self._bestScore:
                 self._bestPath = copy.deepcopy(parziale)
                 self._bestScore = self._getScore(parziale)
+            return
 
         for n in self._graph.successors(parziale[-1]):
             if n not in parziale:
